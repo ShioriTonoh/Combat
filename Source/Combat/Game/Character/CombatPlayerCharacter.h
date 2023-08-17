@@ -1,15 +1,18 @@
-// Copyright Epic Games, Inc. All Rights Reserved.
+// Fill out your copyright notice in the Description page of Project Settings.
 
 #pragma once
 
 #include "CoreMinimal.h"
+#include "CombatCharacterBase.h"
 #include "GameFramework/Character.h"
 #include "InputActionValue.h"
-#include "CombatCharacter.generated.h"
+#include "CombatPlayerCharacter.generated.h"
 
-
-UCLASS(config=Game)
-class ACombatCharacter : public ACharacter
+/**
+ * 
+ */
+UCLASS()
+class COMBAT_API ACombatPlayerCharacter : public ACombatCharacterBase
 {
 	GENERATED_BODY()
 
@@ -38,18 +41,8 @@ class ACombatCharacter : public ACharacter
 	class UInputAction* LookAction;
 
 public:
-	ACombatCharacter();
+	ACombatPlayerCharacter();
 	
-
-protected:
-
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
-
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
-			
-
 protected:
 	// APawn interface
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -57,10 +50,15 @@ protected:
 	// To add mapping context
 	virtual void BeginPlay();
 
+	/** Called for movement input */
+	void Move(const FInputActionValue& Value);
+
+	/** Called for looking input */
+	void Look(const FInputActionValue& Value);
+
 public:
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 };
-
