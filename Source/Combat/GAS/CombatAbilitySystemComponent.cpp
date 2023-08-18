@@ -2,6 +2,7 @@
 
 
 #include "GAS/CombatAbilitySystemComponent.h"
+#include "GAS/Ability/CombatGameplayAbility.h"
 
 void UCombatAbilitySystemComponent::BeginPlay()
 {
@@ -16,12 +17,12 @@ void UCombatAbilitySystemComponent::InitDefaultAbilities(TArray<TSubclassOf<UCom
 	if (InPassiveAbilities.Num() > 0)
 		InActiveAbilities.Append(InPassiveAbilities);
 
-	for (TSubclassOf<UJadeGameplayAbility>& Ability : InActiveAbilities)
+	for (TSubclassOf<UCombatGameplayAbility>& Ability : InActiveAbilities)
 	{
 		if (!Ability)
 			continue;
 
-		auto AbilityHandle = GiveAbility(FGameplayAbilitySpec(Ability, 1, static_cast<int32>(Ability.GetDefaultObject()->AbilityInputID), GetOwnerActor()));
+		auto AbilityHandle = GiveAbility(FGameplayAbilitySpec(Ability, 1, static_cast<int32>(Ability.GetDefaultObject()->InputID), GetOwnerActor()));
 
 		ActiveAbilityHandles.Emplace(AbilityHandle);
 	}
