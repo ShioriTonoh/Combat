@@ -6,6 +6,8 @@
 #include "AbilitySystemComponent.h"
 #include "CombatAbilitySystemComponent.generated.h"
 
+class UCombatGameplayAbility;
+
 /**
  * Base ASC class
  */
@@ -14,4 +16,21 @@ class COMBAT_API UCombatAbilitySystemComponent : public UAbilitySystemComponent
 {
 	GENERATED_BODY()
 	
+public:
+	virtual void BeginPlay() override;
+
+	void InitDefaultAbilities(TArray<TSubclassOf<UCombatGameplayAbility>> InActiveAbilities, TArray<TSubclassOf<UCombatGameplayAbility>> InPassiveAbilities = TArray<TSubclassOf<UCombatGameplayAbility>>());
+
+protected:
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<UCombatGameplayAbility>> ActiveAbilities;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TSubclassOf<UCombatGameplayAbility>> PassiveAbilities;
+
+private:
+	bool bCharacterAbilitiesGiven;
+
+	UPROPERTY(Transient)
+	TArray<FGameplayAbilitySpecHandle> ActiveAbilityHandles;
 };
