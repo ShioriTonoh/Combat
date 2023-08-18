@@ -10,6 +10,7 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/CombatAbilitySystemComponent.h"
+#include "Input/CombatInputComponent.h"
 
 
 //////////////////////////////////////////////////////////////////////////
@@ -52,6 +53,10 @@ ACombatPlayerCharacter::ACombatPlayerCharacter()
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
 
 	AbilitySystemComponent = CreateDefaultSubobject<UCombatAbilitySystemComponent>(TEXT("AbilitySystemComponent"));
+	check(AbilitySystemComponent);
+
+	CombatInputComponent = CreateDefaultSubobject<UCombatInputComponent>(TEXT("InputComponent"));
+	check(CombatInputComponent);
 }
 
 void ACombatPlayerCharacter::BeginPlay()
@@ -64,7 +69,19 @@ void ACombatPlayerCharacter::BeginPlay()
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
-			Subsystem->AddMappingContext(DefaultMappingContext, 0);
+			Subsystem->AddMappingContext(InputMappingContext, 1);
+		}
+	}
+}
+
+void ACombatPlayerCharacter::BindASCInput()
+{
+	if (IsValid(AbilitySystemComponent) && IsValid(InputComponent))
+	{
+		if (APlayerController* PC = CastChecked<APlayerController>(GetController()))
+		{
+			TArray<uint32> BindHandles;
+			CombatInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::OnAbilityInputPressed, &ThisClass::OnAbilityInputReleased, /*out*/ BindHandles);
 		}
 	}
 }
@@ -74,21 +91,21 @@ void ACombatPlayerCharacter::BeginPlay()
 
 void ACombatPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
-	// Set up action bindings
-	if (UEnhancedInputComponent* EnhancedInputComponent = CastChecked<UEnhancedInputComponent>(PlayerInputComponent)) {
+	Super::SetupPlayerInputComponent(PlayerInputComponent);
+
+	// Bind native input, 
+	if (UCombatInputComponent* IC = CastChecked<UCombatInputComponent>(PlayerInputComponent)) {
 
 		//Jumping
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
+		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
 
-		//Moving
-		EnhancedInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ACombatPlayerCharacter::Move);
-
-		//Looking
-		EnhancedInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ACombatPlayerCharacter::Look);
+		IC->BindNativeAction(InputConfig, ECombatInputID::Look, ETriggerEvent::Triggered, this, &ThisClass::Look, false);
+		IC->BindNativeAction(InputConfig, ECombatInputID::Move, ETriggerEvent::Triggered, this, &ThisClass::Move, false);
 
 	}
 
+	BindASCInput();
 }
 
 void ACombatPlayerCharacter::Move(const FInputActionValue& Value)
@@ -125,4 +142,14 @@ void ACombatPlayerCharacter::Look(const FInputActionValue& Value)
 		AddControllerYawInput(LookAxisVector.X);
 		AddControllerPitchInput(LookAxisVector.Y);
 	}
+}
+
+void ACombatPlayerCharacter::OnAbilityInputPressed(const ECombatInputID InputID)
+{
+	AbilitySystemComponent->PressInputID(static_cast<int32>(InputID));
+}
+
+void ACombatPlayerCharacter::OnAbilityInputReleased(const ECombatInputID InputID)
+{
+	AbilitySystemComponent->ReleaseInputID(static_cast<int32>(InputID));
 }

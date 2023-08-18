@@ -40,7 +40,6 @@ void ACombatCharacterBase::Tick(float DeltaTime)
 void ACombatCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
-
 }
 
 UAbilitySystemComponent* ACombatCharacterBase::GetAbilitySystemComponent() const
