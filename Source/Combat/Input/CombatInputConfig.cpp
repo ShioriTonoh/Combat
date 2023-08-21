@@ -21,6 +21,7 @@ const UInputAction* UCombatInputConfig::FindNativeInputActionForInputID(const EC
 	{
 		UE_LOG(LogCombat, Error, TEXT("Can't find NativeInputAction for InputID [%s] on InputConfig [%s]."), *UEnum::GetValueAsString(InputID), *GetNameSafe(this));
 	}
+
 	return nullptr;
 }
 

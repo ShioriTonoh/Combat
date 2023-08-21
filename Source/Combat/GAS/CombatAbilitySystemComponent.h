@@ -22,15 +22,14 @@ public:
 	void InitDefaultAbilities(TArray<TSubclassOf<UCombatGameplayAbility>> InActiveAbilities, TArray<TSubclassOf<UCombatGameplayAbility>> InPassiveAbilities = TArray<TSubclassOf<UCombatGameplayAbility>>());
 
 protected:
+	/* Abilities that can be triggered by player input or AI controller*/
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UCombatGameplayAbility>> ActiveAbilities;
 
+	/* Abilities that can be triggered only by events */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UCombatGameplayAbility>> PassiveAbilities;
 
 private:
 	bool bCharacterAbilitiesGiven;
-
-	UPROPERTY(Transient)
-	TArray<FGameplayAbilitySpecHandle> ActiveAbilityHandles;
 };

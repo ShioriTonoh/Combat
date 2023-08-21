@@ -93,16 +93,11 @@ void ACombatPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
 
-	// Bind native input, 
-	if (UCombatInputComponent* IC = CastChecked<UCombatInputComponent>(PlayerInputComponent)) {
-
-		//Jumping
-		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ACharacter::Jump);
-		//EnhancedInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
-
+	// Bind native input
+	if (UCombatInputComponent* IC = CastChecked<UCombatInputComponent>(PlayerInputComponent)) 
+	{
 		IC->BindNativeAction(InputConfig, ECombatInputID::Look, ETriggerEvent::Triggered, this, &ThisClass::Look, false);
 		IC->BindNativeAction(InputConfig, ECombatInputID::Move, ETriggerEvent::Triggered, this, &ThisClass::Move, false);
-
 	}
 
 	BindASCInput();
@@ -146,10 +141,10 @@ void ACombatPlayerCharacter::Look(const FInputActionValue& Value)
 
 void ACombatPlayerCharacter::OnAbilityInputPressed(const ECombatInputID InputID)
 {
-	AbilitySystemComponent->PressInputID(static_cast<int32>(InputID));
+	AbilitySystemComponent->PressInputID(StaticCast<int32>(InputID));
 }
 
 void ACombatPlayerCharacter::OnAbilityInputReleased(const ECombatInputID InputID)
 {
-	AbilitySystemComponent->ReleaseInputID(static_cast<int32>(InputID));
+	AbilitySystemComponent->ReleaseInputID(StaticCast<int32>(InputID));
 }
