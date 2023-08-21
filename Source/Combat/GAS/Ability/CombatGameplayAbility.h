@@ -21,4 +21,6 @@ public:
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "AbilityDefaults")
 	ECombatInputID InputID;
+
+	virtual void InputReleased(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo) override;
 };

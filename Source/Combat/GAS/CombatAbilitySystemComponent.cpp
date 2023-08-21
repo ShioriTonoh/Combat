@@ -7,6 +7,8 @@
 void UCombatAbilitySystemComponent::BeginPlay()
 {
 	Super::BeginPlay();
+
+	InitDefaultAbilities(ActiveAbilities, PassiveAbilities);
 }
 
 void UCombatAbilitySystemComponent::InitDefaultAbilities(TArray<TSubclassOf<UCombatGameplayAbility>> InActiveAbilities, TArray<TSubclassOf<UCombatGameplayAbility>> InPassiveAbilities)
