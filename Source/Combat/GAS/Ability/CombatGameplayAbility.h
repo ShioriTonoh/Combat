@@ -52,10 +52,10 @@ protected:
 	bool bActivateAbilityOnGranted;
 
 	/* Gameplay events should be sent to self when this ability activate */
-	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	UPROPERTY(EditDefaultsOnly, Category = "Tags|Custom")
 	FGameplayTagContainer SelfEventTagOnActivate;
 
 	/* Gameplay events should be sent to self when this ability end */
-	UPROPERTY(EditDefaultsOnly, Category = "Tags")
+	UPROPERTY(EditDefaultsOnly, Category = "Tags|Custom")
 	FGameplayTagContainer SelfEventTagOnEnd;
 };
