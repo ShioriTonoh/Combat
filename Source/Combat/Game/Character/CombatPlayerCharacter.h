@@ -10,7 +10,7 @@
 #include "CombatPlayerCharacter.generated.h"
 
 /**
- * 
+ * Player character class
  */
 UCLASS()
 class COMBAT_API ACombatPlayerCharacter : public ACombatCharacterBase
@@ -51,8 +51,8 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* FollowCamera;
 
-protected:
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")
+protected:	
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "EnhancedInput")
 	TObjectPtr<class UCombatInputComponent> CombatInputComponent;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "EnhancedInput")

@@ -17,6 +17,7 @@ void ACombatCharacterBase::BeginPlay()
 {
 	Super::BeginPlay();
 	
+	GenerateWeapon();
 }
 
 void ACombatCharacterBase::PossessedBy(AController* NewController)
@@ -45,5 +46,29 @@ void ACombatCharacterBase::SetupPlayerInputComponent(UInputComponent* PlayerInpu
 UAbilitySystemComponent* ACombatCharacterBase::GetAbilitySystemComponent() const
 {
 	return AbilitySystemComponent;
+}
+
+bool ACombatCharacterBase::GenerateWeapon()
+{
+	if (WeaponClass)
+	{
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = this;
+		WeaponInstance = GetWorld()->SpawnActor<AActor>(WeaponClass, SpawnParameters);
+
+		UpdateWeaponPosition(false);
+
+		return IsValid(WeaponInstance);
+	}
+	return false;
+}
+
+void ACombatCharacterBase::UpdateWeaponPosition(bool bUseCombatSocket)
+{
+	if (IsValid(WeaponInstance))
+	{
+		const FName& SocketName = bUseCombatSocket ? WeaponSocket_Combat : WeaponSocket_Idle;
+		WeaponInstance->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SocketName);
+	}
 }
 

@@ -9,7 +9,7 @@
 enum class ECombatInputID : uint8;
 
 /**
- * 
+ * Gameplay Ability base class
  */
 UCLASS()
 class COMBAT_API UCombatGameplayAbility : public UGameplayAbility

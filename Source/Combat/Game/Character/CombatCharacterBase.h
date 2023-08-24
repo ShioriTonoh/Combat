@@ -7,6 +7,10 @@
 #include "GameFramework/Character.h"
 #include "CombatCharacterBase.generated.h"
 
+/**
+ * Character base class, including basic funtion for player and AI
+ */
+
 UCLASS()
 class COMBAT_API ACombatCharacterBase : public ACharacter, public IAbilitySystemInterface
 {
@@ -32,7 +36,25 @@ public:
 	// Returns Gameplay ability system component
 	virtual class UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	bool GenerateWeapon();
+
+	UFUNCTION(BlueprintCallable, Category = "Weapon")
+	void UpdateWeaponPosition(bool bUseCombatSocket = false);
+
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Abilities")
 	TObjectPtr<class UCombatAbilitySystemComponent> AbilitySystemComponent;
+	
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
+	TSubclassOf<AActor> WeaponClass;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	FName WeaponSocket_Idle;
+
+	UPROPERTY(EditAnywhere, Category = "Weapon")
+	FName WeaponSocket_Combat;
+
+	UPROPERTY(Transient)
+	TObjectPtr<AActor> WeaponInstance;
 };
