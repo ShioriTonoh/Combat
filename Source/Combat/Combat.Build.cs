@@ -11,6 +11,8 @@ public class Combat : ModuleRules
 		PublicDependencyModuleNames.AddRange(new string[] { "Core", "CoreUObject", "Engine", "InputCore", "HeadMountedDisplay", "EnhancedInput" });
 
         PrivateDependencyModuleNames.AddRange(new string[] {
+            "AIModule",
+
             "GameplayTags",
             "GameplayTasks",
             "GameplayAbilities"
