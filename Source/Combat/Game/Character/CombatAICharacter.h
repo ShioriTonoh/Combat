@@ -16,15 +16,20 @@ class COMBAT_API ACombatAICharacter : public ACombatCharacterBase
 	GENERATED_BODY()
 	
 public:
+
 	FORCEINLINE class UBehaviorTree* GetBehaviorTree() const
 	{
 		return BehaviorTree;
 	}
 
 protected:
+	virtual void PossessedBy(AController* NewController) override;
+	virtual void UnPossessed() override;
+
+protected:
 	UPROPERTY(EditAnywhere, Category = "Behavior")
 	TObjectPtr<class UBehaviorTree> BehaviorTree;
 
 	UPROPERTY(Transient)
-	TObjectPtr<class AAIController> AIController;
+	TObjectPtr<class ACombatAIController> AIController;
 };

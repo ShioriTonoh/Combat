@@ -19,6 +19,31 @@ ACombatAIController::ACombatAIController(const FObjectInitializer& ObjectInitial
 	check(PerceptionComponent);
 }
 
+void ACombatAIController::SetupBehaviorTree(UBehaviorTree* InBehaviorTreePtr)
+{
+	if (IsValid(InBehaviorTreePtr))
+	{
+		BehaviorTree = InBehaviorTreePtr;
+		UseBlackboard(BehaviorTree->BlackboardAsset, StaticCast<UBlackboardComponent*&>(Blackboard));
+	}
+}
+
+void ACombatAIController::RunBehavior() const
+{
+	if (IsValid(BehaviorTreeComp) && IsValid(BehaviorTree))
+	{
+		BehaviorTreeComp->StartTree(*BehaviorTree);
+	}
+}
+
+void ACombatAIController::StopBehavior() const
+{
+	if (IsValid(BehaviorTreeComp) && IsValid(BehaviorTree))
+	{
+		BehaviorTreeComp->StopTree();
+	}
+}
+
 void ACombatAIController::OnPossess(APawn* InPawn)
 {
 	Super::OnPossess(InPawn);

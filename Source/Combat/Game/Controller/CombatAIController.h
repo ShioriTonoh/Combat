@@ -17,6 +17,10 @@ class COMBAT_API ACombatAIController : public AAIController
 public:
 	ACombatAIController(const FObjectInitializer& ObjectInitializer);
 
+	virtual void SetupBehaviorTree(class UBehaviorTree* InBehaviorTreePtr);
+	virtual void RunBehavior() const;
+	virtual void StopBehavior() const;
+
 protected:
 	virtual void OnPossess(APawn* InPawn) override;
 	virtual void OnUnPossess() override;
