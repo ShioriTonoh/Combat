@@ -12,10 +12,14 @@ void ACombatAICharacter::PossessedBy(AController* NewController)
 	if (IsValid(AIController))
 	{
 		AIController->SetupBehaviorTree(BehaviorTree);
+		AIController->RunBehavior();
 	}
 }
 
 void ACombatAICharacter::UnPossessed()
 {
+	Super::UnPossessed();
+
+	AIController->StopBehavior();
 	AIController = nullptr;
 }
