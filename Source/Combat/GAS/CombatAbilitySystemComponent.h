@@ -7,6 +7,7 @@
 #include "CombatAbilitySystemComponent.generated.h"
 
 class UCombatGameplayAbility;
+class UAnimMontage;
 
 /**
  * Base ASC class
@@ -29,6 +30,9 @@ protected:
 	/* Abilities that can be triggered only by events */
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
 	TArray<TSubclassOf<UCombatGameplayAbility>> PassiveAbilities;
+
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TObjectPtr<UAnimMontage>> AttackAnimMontage;
 
 private:
 	bool bCharacterAbilitiesGiven;

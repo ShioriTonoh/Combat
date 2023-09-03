@@ -16,6 +16,7 @@ class COMBAT_API ACombatAICharacter : public ACombatCharacterBase
 	GENERATED_BODY()
 	
 public:
+	ACombatAICharacter();
 
 	FORCEINLINE class UBehaviorTree* GetBehaviorTree() const
 	{
