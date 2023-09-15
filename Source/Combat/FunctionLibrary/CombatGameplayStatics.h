@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "AbilitySystemBlueprintLibrary.h"
 #include "Kismet/BlueprintFunctionLibrary.h"
 #include "CombatGameplayStatics.generated.h"
 
@@ -20,4 +21,7 @@ public:
 
 	UFUNCTION(BlueprintPure, Category = "Ability")
 	static class UCombatAbilitySystemComponent* GetAbilitySystemComponent(const AActor* Actor);
+
+	UFUNCTION(BlueprintPure, Category = "Ability")
+	static FGameplayEventData MakeGameplayEventDataFromTargetActorClass(AActor* Actor,TSubclassOf<class ACombatGameplayAbilityTargetActor> InTargetActorClass, AActor* OptionalEffectCauser = nullptr);
 };

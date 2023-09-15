@@ -25,6 +25,86 @@ enum class ECombatInputID : uint8
 	GuardPoint		UMETA(DisplayName = "GuardPoint")
 };
 
+UENUM(BlueprintType)
+enum class ECombatCollisionShape : uint8
+{
+	None,
+	Line,
+	Box,
+	Sphere,
+	Capsule
+};
+
+USTRUCT(BlueprintType, meta = (ScriptName = "CollisionShapeSturct"))
+struct FCombatCollisionShape
+{
+	GENERATED_BODY()
+	
+	FCombatCollisionShape()
+	: Length(0.f)
+	, Extent(0.f, 0.f, 0.f)
+	, Radius(0.f)
+	, HalfHeight(0.f)
+	, CollisionShapeType(ECombatCollisionShape::None)
+	{
+
+	}
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition = "CollisionShapeType == ECombatCollisionShape::Line", EditConditionHides))
+	float Length;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition = "CollisionShapeType == ECombatCollisionShape::Box", EditConditionHides))
+	FVector Extent;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition = "CollisionShapeType == ECombatCollisionShape::Capsule || CollisionShapeType == ECombatCollisionShape::Sphere", EditConditionHides))
+	float Radius;
+	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta=(EditCondition = "CollisionShapeType == ECombatCollisionShape::Capsule", EditConditionHides))
+	float HalfHeight;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	ECombatCollisionShape CollisionShapeType;
+};
+
+
+USTRUCT(Blueprintable)
+struct FCombatTargetActorParam
+{
+	GENERATED_USTRUCT_BODY()
+
+public:
+	FCombatTargetActorParam()
+		: MaxLifeTime(-1.f)
+	{
+
+	}
+	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	float MaxLifeTime;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FCombatCollisionShape CollisionShapeInfo;
+};
+
+USTRUCT()
+struct FCombatGameplayEffectContext : public FGameplayEffectContext
+{
+	GENERATED_USTRUCT_BODY()
+
+	FCombatGameplayEffectContext()
+	: TargetActorClass(nullptr)
+	{
+
+	}
+
+	FCombatGameplayEffectContext(const FCombatGameplayEffectContext& Other)
+	{
+		TargetActorClass = Other.TargetActorClass;
+	}
+
+	TSubclassOf<class ACombatGameplayAbilityTargetActor> TargetActorClass;
+};
+
 /**
  * 
  */

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Abilities/GameplayAbilityTargetActor.h"
+#include "Global/CombatGlobals_Common.h"
 #include "CombatGameplayAbilityTargetActor.generated.h"
 
 /**
@@ -14,4 +15,31 @@ class COMBAT_API ACombatGameplayAbilityTargetActor : public AGameplayAbilityTarg
 {
 	GENERATED_BODY()
 	
+public:
+	ACombatGameplayAbilityTargetActor();
+
+	virtual void BeginPlay() override;
+	virtual void EndPlay(const EEndPlayReason::Type EndPlayReason) override;
+	virtual void Tick(float DeltaSeconds) override;
+
+	/** Initialize and begin targeting logic  */
+	virtual void StartTargeting(UGameplayAbility* Ability) override;
+
+	/** Requesting targeting data, but not necessarily stopping/destroying the task. Useful for external target data requests. */
+	virtual void ConfirmTargetingAndContinue() override;
+
+	FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
+
+protected:
+	virtual void DoSweepCheck(int32 Steps, TArray<FHitResult>& HitResults, float DeltaTime);
+
+protected:
+	UPROPERTY(BlueprintReadOnly, Category = "Targeting")
+	TArray<FHitResult> TargetHitResults;
+
+	UPROPERTY(/*BlueprintReadOnly, Category = "Targeting"*/)
+	TArray<TWeakObjectPtr<AActor>> TargetOverlapActors;
+
+	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Targeting")
+	FCombatTargetActorParam TargetActorParam;
 };
