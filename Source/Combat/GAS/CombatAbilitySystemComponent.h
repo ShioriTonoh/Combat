@@ -34,6 +34,9 @@ protected:
 	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
 	TArray<TObjectPtr<UAnimMontage>> AttackAnimMontage;
 
+	UPROPERTY(BlueprintReadOnly, EditAnywhere, Category = "Abilities")
+	TArray<TObjectPtr<UAnimMontage>> KnockHitAnimMontage;
+
 private:
 	bool bCharacterAbilitiesGiven;
 };

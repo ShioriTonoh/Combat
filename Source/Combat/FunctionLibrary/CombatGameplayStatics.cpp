@@ -26,7 +26,7 @@ FGameplayEventData UCombatGameplayStatics::MakeGameplayEventDataFromTargetActorC
 		NewData.Instigator = Actor;
 		NewData.ContextHandle = ASC->MakeEffectContext();
 		NewData.ContextHandle.AddInstigator(Actor, OptionalEffectCauser);
-		StaticCast<FCombatGameplayEffectContext*>(NewData.ContextHandle.Get())->TargetActorClass = InTargetActorClass;
+		//StaticCast<FCombatGameplayEffectContext*>(NewData.ContextHandle.Get())->TargetActorClass = InTargetActorClass;
 	}
 
 	return NewData;
