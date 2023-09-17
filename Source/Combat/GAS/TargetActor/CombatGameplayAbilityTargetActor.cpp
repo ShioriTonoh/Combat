@@ -92,8 +92,13 @@ void ACombatGameplayAbilityTargetActor::DoSweepCheck(int32 Steps, TArray<FHitRes
 	{
 		if (ACombatAICharacter* Enemy = Cast<ACombatAICharacter>(OverlapResult.GetActor()))
 		{
-			TargetOverlapActors.AddUnique(Enemy);
-			UE_LOG(LogTemp, Log, TEXT("Overlapping pawn: %s"), *Enemy->GetName());
+			if (!TargetOverlapActors.Contains(Enemy))
+			{
+				TargetOverlapActors.AddUnique(Enemy);
+				ConfirmTargetingAndContinue();
+				UE_LOG(LogTemp, Log, TEXT("Overlapping pawn: %s"), *Enemy->GetName());
+			}
+
 		}
 	}
 }

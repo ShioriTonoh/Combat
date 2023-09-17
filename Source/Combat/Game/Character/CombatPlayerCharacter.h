@@ -21,13 +21,19 @@ public:
 	
 	/** Returns CameraBoom subobject **/
 	FORCEINLINE class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
+
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
+
+	UFUNCTION(Category = "LockTarget")
+	FORCEINLINE TWeakObjectPtr<AActor> GetCurrentLockTarget() const { return CurrentLockTarget; }
 
 protected:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	virtual void BeginPlay();
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaTime) override;
 
 	/** Bind  */
 	void BindASCInput();
@@ -38,9 +44,23 @@ protected:
 	/** Called for looking input */
 	void Look(const FInputActionValue& Value);
 
-
 	void OnAbilityInputPressed(const ECombatInputID InputID);
 	void OnAbilityInputReleased(const ECombatInputID InputID);
+
+	UFUNCTION(Blueprintcallable, Category = "LockTarget")
+	void SetCameraRotationToLockTarget();
+
+	UFUNCTION(Blueprintcallable, Category = "LockTarget")
+	void FindLockTarget();
+
+	UFUNCTION(Blueprintcallable, Category = "LockTarget")
+	void TryLockTarget();
+
+	UFUNCTION(Category = "LockTarget")
+	void DoLockTarget();
+
+	UFUNCTION(Category = "LockTarget")
+	void CancelLockTarget();
 
 public:
 	/** Camera boom positioning the camera behind the character */
@@ -60,4 +80,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, Category = "EnhancedInput")
 	TObjectPtr<class UInputMappingContext> InputMappingContext;
+
+	UPROPERTY(EditDefaultsOnly, Category = "LockTarget")
+	float LockSphereRadius;
+
+	UPROPERTY(Transient, VisibleAnywhere, BlueprintReadOnly, Category = "LockTarget")
+	TWeakObjectPtr<AActor> CurrentLockTarget;
+
+private:
+	bool bIsLockingTarget;
 };

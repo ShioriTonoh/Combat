@@ -6,17 +6,21 @@
 #include "Components/InputComponent.h"
 #include "EnhancedInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Game/Character/CombatAICharacter.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GAS/CombatAbilitySystemComponent.h"
 #include "Input/CombatInputComponent.h"
+#include "Kismet/KismetMathLibrary.h"
 
 
 //////////////////////////////////////////////////////////////////////////
 // ACombatPlayerCharacter
 
 ACombatPlayerCharacter::ACombatPlayerCharacter()
+	: LockSphereRadius(500.f)
+	, bIsLockingTarget(false)
 {
 	// Set size for collision capsule
 	GetCapsuleComponent()->InitCapsuleSize(42.f, 96.0f);
@@ -74,6 +78,14 @@ void ACombatPlayerCharacter::BeginPlay()
 	}
 }
 
+void ACombatPlayerCharacter::Tick(float DeltaTime)
+{
+	if (bIsLockingTarget)
+	{
+		SetCameraRotationToLockTarget();
+	}
+}
+
 void ACombatPlayerCharacter::BindASCInput()
 {
 	if (IsValid(AbilitySystemComponent) && IsValid(InputComponent))
@@ -89,6 +101,70 @@ void ACombatPlayerCharacter::BindASCInput()
 //////////////////////////////////////////////////////////////////////////
 // Input
 
+void ACombatPlayerCharacter::FindLockTarget()
+{
+	if (APlayerController* PC = Cast<APlayerController>(GetController()))
+	{
+		FCollisionQueryParams QueryParams;
+		QueryParams.AddIgnoredActor(this);
+
+		TArray<FOverlapResult> OverlapResults;
+		GetWorld()->OverlapMultiByChannel(OverlapResults, GetActorLocation(), FQuat::Identity, ECollisionChannel::ECC_Pawn, FCollisionShape::MakeSphere(LockSphereRadius), QueryParams);
+
+		float MinDist = 9999.f;
+
+		for (auto OverlapResult : OverlapResults)
+		{
+			if (ACombatAICharacter* NewTarget = Cast<ACombatAICharacter>(OverlapResult.GetActor()))
+			{
+				FVector2D Vec;
+				if (PC->ProjectWorldLocationToScreen(NewTarget->GetActorLocation(), Vec))
+				{
+					FVector ToPendingTarget = NewTarget->GetActorLocation() - GetActorLocation();
+					ToPendingTarget.Z = 0.f;
+
+					if (MinDist > ToPendingTarget.Size())
+					{
+						MinDist = ToPendingTarget.Size();
+						CurrentLockTarget = NewTarget;
+					}
+				}
+			}
+		}
+	}
+	else
+	{
+		CurrentLockTarget = nullptr;
+	}
+
+}
+
+void ACombatPlayerCharacter::TryLockTarget()
+{
+	if (bIsLockingTarget)
+	{
+		CancelLockTarget();
+	}
+	else
+	{
+		DoLockTarget();
+	}
+}
+
+void ACombatPlayerCharacter::DoLockTarget()
+{
+	FindLockTarget();
+	bIsLockingTarget = true;
+	bUseControllerRotationYaw = true;
+}
+
+void ACombatPlayerCharacter::CancelLockTarget()
+{
+	CurrentLockTarget = nullptr;
+	bIsLockingTarget = false;
+	bUseControllerRotationYaw = false;
+}
+
 void ACombatPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent)
 {
 	Super::SetupPlayerInputComponent(PlayerInputComponent);
@@ -98,6 +174,7 @@ void ACombatPlayerCharacter::SetupPlayerInputComponent(class UInputComponent* Pl
 	{
 		IC->BindNativeAction(InputConfig, ECombatInputID::Look, ETriggerEvent::Triggered, this, &ThisClass::Look, false);
 		IC->BindNativeAction(InputConfig, ECombatInputID::Move, ETriggerEvent::Triggered, this, &ThisClass::Move, false);
+		IC->BindNativeAction(InputConfig, ECombatInputID::Lock, ETriggerEvent::Started, this, &ThisClass::TryLockTarget, false);
 	}
 
 	BindASCInput();
@@ -147,4 +224,23 @@ void ACombatPlayerCharacter::OnAbilityInputPressed(const ECombatInputID InputID)
 void ACombatPlayerCharacter::OnAbilityInputReleased(const ECombatInputID InputID)
 {
 	AbilitySystemComponent->ReleaseInputID(StaticCast<int32>(InputID));
+}
+
+void ACombatPlayerCharacter::SetCameraRotationToLockTarget()
+{
+	if (GetController())
+	{
+		if (CurrentLockTarget.IsValid())
+		{
+			FRotator NewControlRotation = UKismetMathLibrary::FindLookAtRotation(GetPawnViewLocation(), CurrentLockTarget->GetActorLocation());
+			FVector ToTargetVector = CurrentLockTarget->GetActorLocation() - GetActorLocation();
+			GetController()->SetControlRotation(NewControlRotation);
+		}
+		else
+		{
+			GetController()->SetControlRotation(GetActorRotation());
+			CancelLockTarget();
+		}
+	}
+
 }
