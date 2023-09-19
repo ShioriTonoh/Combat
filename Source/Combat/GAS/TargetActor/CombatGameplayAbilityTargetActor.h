@@ -25,10 +25,14 @@ public:
 	/** Initialize and begin targeting logic  */
 	virtual void StartTargeting(UGameplayAbility* Ability) override;
 
+	void StartTargetingWithNewParam(UGameplayAbility* Ability, const FCombatTargetActorParam& InParam);
+
 	/** Requesting targeting data, but not necessarily stopping/destroying the task. Useful for external target data requests. */
 	virtual void ConfirmTargetingAndContinue() override;
 
 	FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
+
+	FORCEINLINE const FCombatTargetActorParam& GetTargetActorParam() const { return *&TargetActorParam; }
 
 protected:
 	virtual void DoSweepCheck(int32 Steps, TArray<FHitResult>& HitResults, float DeltaTime);

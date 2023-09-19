@@ -49,6 +49,13 @@ void ACombatGameplayAbilityTargetActor::StartTargeting(UGameplayAbility* Ability
 
 }
 
+void ACombatGameplayAbilityTargetActor::StartTargetingWithNewParam(UGameplayAbility* Ability, const FCombatTargetActorParam& InParam)
+{
+	TargetActorParam = InParam;
+
+	StartTargeting(Ability);
+}
+
 void ACombatGameplayAbilityTargetActor::ConfirmTargetingAndContinue()
 {
 	if (SourceActor && OwningAbility /*&& (TargetHitResults.Num() > 0)*/)
@@ -80,11 +87,38 @@ void ACombatGameplayAbilityTargetActor::DoSweepCheck(int32 Steps, TArray<FHitRes
 	FVector OverlapPos = GetActorLocation();
 	OverlapPos.Z += 50.f;
 
-	FCollisionShape OverlapShape = FCollisionShape::MakeBox(TargetActorParam.CollisionShapeInfo.Extent);
-	if (bDebug)
+	FCollisionShape OverlapShape;
+	switch (TargetActorParam.CollisionShapeInfo.CollisionShapeType)
 	{
-		DrawDebugBox(GetWorld(), OverlapPos, TargetActorParam.CollisionShapeInfo.Extent, FColor::Green, false, DeltaTime, 0, 1);
+	case ECombatCollisionShape::Box:
+		OverlapShape = FCollisionShape::MakeBox(TargetActorParam.CollisionShapeInfo.Extent);
+		if (bDebug)
+		{
+			DrawDebugBox(GetWorld(), OverlapPos, TargetActorParam.CollisionShapeInfo.Extent, FColor::Green, false, DeltaTime, 0, 1);
+		}
+		break;
+
+	case ECombatCollisionShape::Capsule:
+		OverlapShape = FCollisionShape::MakeCapsule(TargetActorParam.CollisionShapeInfo.Radius, TargetActorParam.CollisionShapeInfo.HalfHeight);
+		if (bDebug)
+		{
+			DrawDebugCapsule(GetWorld(), OverlapPos, TargetActorParam.CollisionShapeInfo.Radius, TargetActorParam.CollisionShapeInfo.HalfHeight, FQuat::Identity, FColor::Green, false, DeltaTime, 0, 1);
+		}
+		break;
+
+	case ECombatCollisionShape::Sphere:
+		OverlapShape = FCollisionShape::MakeSphere(TargetActorParam.CollisionShapeInfo.Radius);
+		if (bDebug)
+		{
+			DrawDebugSphere(GetWorld(), OverlapPos, TargetActorParam.CollisionShapeInfo.Radius, 8, FColor::Green, false, DeltaTime, 0, 1);
+		}
+		break;
+
+	default:
+		break;
 	}
+
+
 
 	GetWorld()->OverlapMultiByChannel(OverlapResults, OverlapPos, FQuat::Identity, ECollisionChannel::ECC_Pawn, OverlapShape, QueryParams);
 

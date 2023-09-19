@@ -20,10 +20,19 @@ public:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData);
 	virtual void EndAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, bool bReplicateEndAbility, bool bWasCancelled);
 
+	UFUNCTION()
+	virtual void OnValidDataCallback(const FGameplayAbilityTargetDataHandle& Data);
+
+	UFUNCTION()
+	virtual void OnEventRecieved(FGameplayEventData EventData);
+
 protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayTag StopTryTargetEventTag;
 
 	UPROPERTY(Transient, BlueprintReadOnly)
-	TWeakObjectPtr<class AGameplayAbilityTargetActor> SpawnedActor;
+	TWeakObjectPtr<class ACombatGameplayAbilityTargetActor> SpawnedActor;
+
+	UPROPERTY(BlueprintReadOnly)
+	bool bIsPlayerTryingTarget;
 };

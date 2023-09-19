@@ -26,7 +26,7 @@ void UAnimNotifyState_TryTarget::NotifyBegin(USkeletalMeshComponent* MeshComp, U
 			}
 
 			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, StartTryTargetEventTag, 
-				UCombatGameplayStatics::MakeGameplayEventDataFromTargetActorClass(OwnerActor, TryTargetClass, MeshComp->GetOwner()));
+				UCombatGameplayStatics::MakeGameplayEventDataFromTargetActorParam(OwnerActor, TryTargetParam, MeshComp->GetOwner()));
 		}
 	}
 }
@@ -44,8 +44,7 @@ void UAnimNotifyState_TryTarget::NotifyEnd(USkeletalMeshComponent* MeshComp, UAn
 				OwnerActor = OwnerActor->GetOwner();
 			}
 
-			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, StopTryTargetEventTag,
-				UCombatGameplayStatics::MakeGameplayEventDataFromTargetActorClass(OwnerActor, TryTargetClass, MeshComp->GetOwner()));
+			UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(OwnerActor, StopTryTargetEventTag, FGameplayEventData());
 		}
 	}
 }

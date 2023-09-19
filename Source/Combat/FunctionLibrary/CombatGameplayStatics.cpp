@@ -17,7 +17,7 @@ UCombatAbilitySystemComponent* UCombatGameplayStatics::GetAbilitySystemComponent
 	return Cast<UCombatAbilitySystemComponent>(UAbilitySystemGlobals::GetAbilitySystemComponentFromActor(Actor, false));
 }
 
-FGameplayEventData UCombatGameplayStatics::MakeGameplayEventDataFromTargetActorClass(AActor* Actor, TSubclassOf<class ACombatGameplayAbilityTargetActor> InTargetActorClass, AActor* OptionalEffectCauser)
+FGameplayEventData UCombatGameplayStatics::MakeGameplayEventDataFromTargetActorParam(AActor* Actor, const FCombatTargetActorParam& InTargetActorParam, AActor* OptionalEffectCauser)
 {
 	FGameplayEventData NewData;
 
@@ -26,8 +26,16 @@ FGameplayEventData UCombatGameplayStatics::MakeGameplayEventDataFromTargetActorC
 		NewData.Instigator = Actor;
 		NewData.ContextHandle = ASC->MakeEffectContext();
 		NewData.ContextHandle.AddInstigator(Actor, OptionalEffectCauser);
-		//StaticCast<FCombatGameplayEffectContext*>(NewData.ContextHandle.Get())->TargetActorClass = InTargetActorClass;
+		StaticCast<FCombatGameplayEffectContext*>(NewData.ContextHandle.Get())->TargetActorParam = InTargetActorParam;
 	}
 
 	return NewData;
+}
+
+void UCombatGameplayStatics::GetTargetActorParamFromGameplayEventData(const FGameplayEventData& EventData, FCombatTargetActorParam& OutTargetActorParam)
+{
+	if (EventData.ContextHandle.IsValid())
+	{
+		OutTargetActorParam = StaticCast<const FCombatGameplayEffectContext*>(EventData.ContextHandle.Get())->TargetActorParam;
+	}
 }

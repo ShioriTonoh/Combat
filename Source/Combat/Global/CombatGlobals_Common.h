@@ -29,7 +29,6 @@ UENUM(BlueprintType)
 enum class ECombatCollisionShape : uint8
 {
 	None,
-	Line,
 	Box,
 	Sphere,
 	Capsule
@@ -74,16 +73,25 @@ struct FCombatTargetActorParam
 
 public:
 	FCombatTargetActorParam()
-		: MaxLifeTime(-1.f)
+		: TaskInstanceName("TargetActor")
+		, MaxLifeTime(-1.f)
 	{
 
 	}
-	
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	TSubclassOf<class ACombatGameplayAbilityTargetActor> TargetActorClass;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FName TaskInstanceName;
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	float MaxLifeTime;
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FCombatCollisionShape CollisionShapeInfo;
+
+	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	//FGameplayTagContainer AdditionalTagToTarget;
 };
 
 USTRUCT()
@@ -92,17 +100,17 @@ struct FCombatGameplayEffectContext : public FGameplayEffectContext
 	GENERATED_USTRUCT_BODY()
 
 	FCombatGameplayEffectContext()
-	: TargetActorClass(nullptr)
 	{
 
 	}
 
 	FCombatGameplayEffectContext(const FCombatGameplayEffectContext& Other)
 	{
-		TargetActorClass = Other.TargetActorClass;
+		TargetActorParam = Other.TargetActorParam;
 	}
 
-	TSubclassOf<class ACombatGameplayAbilityTargetActor> TargetActorClass;
+	FCombatTargetActorParam TargetActorParam;
+
 };
 
 /**

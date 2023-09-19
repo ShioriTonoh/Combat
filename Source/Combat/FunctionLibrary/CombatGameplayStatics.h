@@ -23,5 +23,8 @@ public:
 	static class UCombatAbilitySystemComponent* GetAbilitySystemComponent(const AActor* Actor);
 
 	UFUNCTION(BlueprintPure, Category = "Ability")
-	static FGameplayEventData MakeGameplayEventDataFromTargetActorClass(AActor* Actor,TSubclassOf<class ACombatGameplayAbilityTargetActor> InTargetActorClass, AActor* OptionalEffectCauser = nullptr);
+	static FGameplayEventData MakeGameplayEventDataFromTargetActorParam(AActor* Actor, const struct FCombatTargetActorParam& InTargetActorParam, AActor* OptionalEffectCauser = nullptr);
+
+	UFUNCTION(BlueprintPure, Category = "Ability")
+	static void GetTargetActorParamFromGameplayEventData(const FGameplayEventData& EventData, struct FCombatTargetActorParam& OutTargetActorParam);
 };

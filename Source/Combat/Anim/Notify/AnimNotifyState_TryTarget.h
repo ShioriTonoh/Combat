@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Animation/AnimNotifies/AnimNotifyState.h"
 #include "GameplayTagContainer.h"
+#include "Global/CombatGlobals_Common.h"
 #include "AnimNotifyState_TryTarget.generated.h"
 
 /**
@@ -32,5 +33,5 @@ protected:
 	bool bOverrideEffectCauser;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "AnimNotify")
-	TSubclassOf<class ACombatGameplayAbilityTargetActor> TryTargetClass;
+	FCombatTargetActorParam TryTargetParam;
 };
