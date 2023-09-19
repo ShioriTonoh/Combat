@@ -16,14 +16,6 @@ void ACombatGameplayAbilityTargetActor::BeginPlay()
 	Super::BeginPlay();
 
 	TargetOverlapActors.Empty();
-
-	switch (TargetActorParam.CollisionShapeInfo.CollisionShapeType)
-	{
-		//TODO: Spawn collision component from trigger event payload
-	case ECombatCollisionShape::Box:
-	default:
-		break;
-	}
 }
 
 void ACombatGameplayAbilityTargetActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -33,7 +25,12 @@ void ACombatGameplayAbilityTargetActor::EndPlay(const EEndPlayReason::Type EndPl
 
 void ACombatGameplayAbilityTargetActor::Tick(float DeltaSeconds)
 {
-	DoSweepCheck(0, TargetHitResults, DeltaSeconds);
+	Super::Tick(DeltaSeconds);
+
+	if (LocalTargetActorParam.TargetActorClass == GetClass())
+	{
+		DoSweepCheck(0, TargetHitResults, DeltaSeconds);
+	}
 }
 
 void ACombatGameplayAbilityTargetActor::StartTargeting(UGameplayAbility* Ability)
@@ -42,16 +39,21 @@ void ACombatGameplayAbilityTargetActor::StartTargeting(UGameplayAbility* Ability
 
 	SourceActor = Ability->GetCurrentActorInfo()->AvatarActor.Get();
 
-	if (TargetActorParam.MaxLifeTime > 0.f)
+	if (LocalTargetActorParam.MaxLifeTime > 0.f)
 	{
-		SetLifeSpan(TargetActorParam.MaxLifeTime);
+		SetLifeSpan(LocalTargetActorParam.MaxLifeTime);
+	}
+
+	if (ACombatCharacterBase* Character = Cast<ACombatCharacterBase>(SourceActor))
+	{
+		AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Character->WeaponSocket_Combat);
 	}
 
 }
 
 void ACombatGameplayAbilityTargetActor::StartTargetingWithNewParam(UGameplayAbility* Ability, const FCombatTargetActorParam& InParam)
 {
-	TargetActorParam = InParam;
+	LocalTargetActorParam = InParam;
 
 	StartTargeting(Ability);
 }
@@ -85,40 +87,38 @@ void ACombatGameplayAbilityTargetActor::DoSweepCheck(int32 Steps, TArray<FHitRes
 	}
 
 	FVector OverlapPos = GetActorLocation();
-	OverlapPos.Z += 50.f;
+	//OverlapPos.Z += 50.f;
 
 	FCollisionShape OverlapShape;
-	switch (TargetActorParam.CollisionShapeInfo.CollisionShapeType)
+	switch (LocalTargetActorParam.CollisionShapeInfo.CollisionShapeType)
 	{
 	case ECombatCollisionShape::Box:
-		OverlapShape = FCollisionShape::MakeBox(TargetActorParam.CollisionShapeInfo.Extent);
+		OverlapShape = FCollisionShape::MakeBox(LocalTargetActorParam.CollisionShapeInfo.Extent * GetActorScale());
 		if (bDebug)
 		{
-			DrawDebugBox(GetWorld(), OverlapPos, TargetActorParam.CollisionShapeInfo.Extent, FColor::Green, false, DeltaTime, 0, 1);
+			DrawDebugBox(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Extent * GetActorScale(), FColor::Green, true, DeltaTime, 0, 1);
 		}
 		break;
 
 	case ECombatCollisionShape::Capsule:
-		OverlapShape = FCollisionShape::MakeCapsule(TargetActorParam.CollisionShapeInfo.Radius, TargetActorParam.CollisionShapeInfo.HalfHeight);
+		OverlapShape = FCollisionShape::MakeCapsule(LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y), LocalTargetActorParam.CollisionShapeInfo.HalfHeight * GetActorScale().Z);
 		if (bDebug)
 		{
-			DrawDebugCapsule(GetWorld(), OverlapPos, TargetActorParam.CollisionShapeInfo.Radius, TargetActorParam.CollisionShapeInfo.HalfHeight, FQuat::Identity, FColor::Green, false, DeltaTime, 0, 1);
+			DrawDebugCapsule(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y), LocalTargetActorParam.CollisionShapeInfo.HalfHeight * GetActorScale().Z, FQuat::Identity, FColor::Green, false, DeltaTime, 0, 1);
 		}
 		break;
 
 	case ECombatCollisionShape::Sphere:
-		OverlapShape = FCollisionShape::MakeSphere(TargetActorParam.CollisionShapeInfo.Radius);
+		OverlapShape = FCollisionShape::MakeSphere(LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y));
 		if (bDebug)
 		{
-			DrawDebugSphere(GetWorld(), OverlapPos, TargetActorParam.CollisionShapeInfo.Radius, 8, FColor::Green, false, DeltaTime, 0, 1);
+			DrawDebugSphere(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y), 8, FColor::Green, false, DeltaTime, 0, 1);
 		}
 		break;
 
 	default:
 		break;
 	}
-
-
 
 	GetWorld()->OverlapMultiByChannel(OverlapResults, OverlapPos, FQuat::Identity, ECollisionChannel::ECC_Pawn, OverlapShape, QueryParams);
 

@@ -76,8 +76,8 @@ public:
 		: TaskInstanceName("TargetActor")
 		, MaxLifeTime(-1.f)
 	{
-
 	}
+
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	TSubclassOf<class ACombatGameplayAbilityTargetActor> TargetActorClass;
 

@@ -42,18 +42,19 @@ public:
 	UFUNCTION(BlueprintCallable, Category = "Weapon")
 	void UpdateWeaponPosition(bool bUseCombatSocket = false);
 
+public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	FName WeaponSocket_Idle;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
+	FName WeaponSocket_Combat;
+
 protected:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Abilities")
 	TObjectPtr<class UCombatAbilitySystemComponent> AbilitySystemComponent;
 	
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Weapon")
 	TSubclassOf<AActor> WeaponClass;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
-	FName WeaponSocket_Idle;
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Weapon")
-	FName WeaponSocket_Combat;
 
 	UPROPERTY(Transient)
 	TObjectPtr<AActor> WeaponInstance;

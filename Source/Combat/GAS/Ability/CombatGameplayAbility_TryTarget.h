@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GAS/Ability/CombatGameplayAbility.h"
+#include "Global/CombatGlobals_Common.h"
 #include "CombatGameplayAbility_TryTarget.generated.h"
 
 /**
@@ -30,8 +31,11 @@ protected:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FGameplayTag StopTryTargetEventTag;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	struct FCombatTargetActorParam DefaultParam;
+
 	UPROPERTY(Transient, BlueprintReadOnly)
-	TWeakObjectPtr<class ACombatGameplayAbilityTargetActor> SpawnedActor;
+	TObjectPtr<class ACombatGameplayAbilityTargetActor> SpawnedActor;
 
 	UPROPERTY(BlueprintReadOnly)
 	bool bIsPlayerTryingTarget;

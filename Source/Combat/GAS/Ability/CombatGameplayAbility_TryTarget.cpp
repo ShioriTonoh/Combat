@@ -31,8 +31,10 @@ void UCombatGameplayAbility_TryTarget::ActivateAbility(const FGameplayAbilitySpe
 
 		if (NewParam.TargetActorClass == nullptr)
 		{
-			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
-			return;
+			NewParam = DefaultParam;
+
+			//EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
+			//return;
 		}
 
 		AGameplayAbilityTargetActor* SpawnedTargetActor = nullptr;
@@ -104,6 +106,7 @@ void UCombatGameplayAbility_TryTarget::OnEventRecieved(FGameplayEventData EventD
 {
 	if (StopTryTargetEventTag == EventData.EventTag)
 	{
+		SpawnedActor = nullptr;
 		CancelAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, false);
 	}
 }

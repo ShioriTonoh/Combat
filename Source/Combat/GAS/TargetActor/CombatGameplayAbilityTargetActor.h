@@ -32,7 +32,7 @@ public:
 
 	FGameplayAbilityTargetDataHandle MakeTargetData(const TArray<FHitResult>& HitResults) const;
 
-	FORCEINLINE const FCombatTargetActorParam& GetTargetActorParam() const { return *&TargetActorParam; }
+	FORCEINLINE const FCombatTargetActorParam& GetTargetActorParam() const { return *&LocalTargetActorParam; }
 
 protected:
 	virtual void DoSweepCheck(int32 Steps, TArray<FHitResult>& HitResults, float DeltaTime);
@@ -44,6 +44,7 @@ protected:
 	UPROPERTY(/*BlueprintReadOnly, Category = "Targeting"*/)
 	TArray<TWeakObjectPtr<AActor>> TargetOverlapActors;
 
-	UPROPERTY(BlueprintReadWrite, EditDefaultsOnly, Category = "Targeting")
-	FCombatTargetActorParam TargetActorParam;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Targeting")
+	FCombatTargetActorParam LocalTargetActorParam;
+
 };

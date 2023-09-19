@@ -26,7 +26,7 @@ FGameplayEventData UCombatGameplayStatics::MakeGameplayEventDataFromTargetActorP
 		NewData.Instigator = Actor;
 		NewData.ContextHandle = ASC->MakeEffectContext();
 		NewData.ContextHandle.AddInstigator(Actor, OptionalEffectCauser);
-		StaticCast<FCombatGameplayEffectContext*>(NewData.ContextHandle.Get())->TargetActorParam = InTargetActorParam;
+		//StaticCast<FCombatGameplayEffectContext*>(NewData.ContextHandle.Get())->TargetActorParam = InTargetActorParam;
 	}
 
 	return NewData;
@@ -36,6 +36,6 @@ void UCombatGameplayStatics::GetTargetActorParamFromGameplayEventData(const FGam
 {
 	if (EventData.ContextHandle.IsValid())
 	{
-		OutTargetActorParam = StaticCast<const FCombatGameplayEffectContext*>(EventData.ContextHandle.Get())->TargetActorParam;
+		//OutTargetActorParam = StaticCast<const FCombatGameplayEffectContext*>(EventData.ContextHandle.Get())->TargetActorParam;
 	}
 }
