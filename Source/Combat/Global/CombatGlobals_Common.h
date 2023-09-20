@@ -94,11 +94,11 @@ public:
 	//FGameplayTagContainer AdditionalTagToTarget;
 };
 
-USTRUCT()
+USTRUCT(BlueprintType)
 struct FCombatGameplayEffectContext : public FGameplayEffectContext
 {
 	GENERATED_USTRUCT_BODY()
-	virtual ~FCombatGameplayEffectContext() { }
+	virtual ~FCombatGameplayEffectContext() override { }
 	
 	FCombatGameplayEffectContext()
 	{
@@ -110,6 +110,12 @@ struct FCombatGameplayEffectContext : public FGameplayEffectContext
 		TargetActorParam = Other.TargetActorParam;
 	}
 
+	FCombatGameplayEffectContext(FName OtherName)
+	{
+
+	}
+
+	UPROPERTY(BlueprintReadWrite)
 	FCombatTargetActorParam TargetActorParam;
 
 	/** Returns the serialization data, must always be overridden */
@@ -137,7 +143,6 @@ struct TStructOpsTypeTraits<FCombatGameplayEffectContext> : public TStructOpsTyp
 {
 	enum
 	{
-		WithNetSerializer = true,
 		WithCopy = true
 	};
 };
@@ -146,7 +151,7 @@ struct TStructOpsTypeTraits<FCombatGameplayEffectContext> : public TStructOpsTyp
 /**
  * 
  */
-UCLASS()
+UCLASS(Blueprintable, ClassGroup = Manager)
 class COMBAT_API UCombatGlobals_Ability : public UAbilitySystemGlobals
 {
 	GENERATED_BODY()
