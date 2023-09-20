@@ -3,3 +3,7 @@
 
 #include "Global/CombatGlobals_Common.h"
 
+FCombatGameplayEffectContext* UCombatGlobals_Ability::AllocGameplayEffectContext() const
+{
+	return new FCombatGameplayEffectContext();
+}

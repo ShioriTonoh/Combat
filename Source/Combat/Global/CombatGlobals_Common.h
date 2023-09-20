@@ -98,7 +98,8 @@ USTRUCT()
 struct FCombatGameplayEffectContext : public FGameplayEffectContext
 {
 	GENERATED_USTRUCT_BODY()
-
+	virtual ~FCombatGameplayEffectContext() { }
+	
 	FCombatGameplayEffectContext()
 	{
 
@@ -111,7 +112,36 @@ struct FCombatGameplayEffectContext : public FGameplayEffectContext
 
 	FCombatTargetActorParam TargetActorParam;
 
+	/** Returns the serialization data, must always be overridden */
+	virtual UScriptStruct* GetScriptStruct() const override
+	{
+		return FCombatGameplayEffectContext::StaticStruct();
+	}
+
+	virtual FCombatGameplayEffectContext* Duplicate() const override
+	{
+		FCombatGameplayEffectContext* NewContext = new FCombatGameplayEffectContext();
+		*NewContext = *this;
+		if (GetHitResult())
+		{
+			// Does a deep copy of the hit result
+			NewContext->AddHitResult(*GetHitResult(), true);
+		}
+		return NewContext;
+	}
 };
+
+// For now this is REQUIRED for FCombatGameplayEffectContext copy to work
+template<>
+struct TStructOpsTypeTraits<FCombatGameplayEffectContext> : public TStructOpsTypeTraitsBase2<FCombatGameplayEffectContext>
+{
+	enum
+	{
+		WithNetSerializer = true,
+		WithCopy = true
+	};
+};
+
 
 /**
  * 
@@ -121,4 +151,7 @@ class COMBAT_API UCombatGlobals_Ability : public UAbilitySystemGlobals
 {
 	GENERATED_BODY()
 	
+public:
+	/** Should allocate a project specific GameplayEffectContext struct. Caller is responsible for deallocation */
+	virtual FCombatGameplayEffectContext* AllocGameplayEffectContext() const override;
 };
