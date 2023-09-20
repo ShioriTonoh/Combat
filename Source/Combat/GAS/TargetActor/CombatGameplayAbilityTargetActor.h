@@ -44,7 +44,6 @@ protected:
 	UPROPERTY(/*BlueprintReadOnly, Category = "Targeting"*/)
 	TArray<TWeakObjectPtr<AActor>> TargetOverlapActors;
 
-	UPROPERTY(BlueprintReadWrite, EditAnywhere, Category = "Targeting")
 	FCombatTargetActorParam LocalTargetActorParam;
 
 };

@@ -37,21 +37,23 @@ void UCombatGameplayAbility_TryTarget::ActivateAbility(const FGameplayAbilitySpe
 			//return;
 		}
 
-		AGameplayAbilityTargetActor* SpawnedTargetActor = nullptr;
+		FActorSpawnParameters SpawnParameters;
+		SpawnParameters.Owner = GetCurrentActorInfo()->AvatarActor.Get();
 
-		const auto TargetTask = UAbilityTask_WaitTargetData::WaitTargetData(this, 
+		AGameplayAbilityTargetActor* SpawnedTargetActor = Cast<AGameplayAbilityTargetActor>(GetWorld()->SpawnActor(NewParam.TargetActorClass, &FVector::ZeroVector, &FRotator::ZeroRotator, SpawnParameters));
+
+		const auto TargetTask = UAbilityTask_WaitTargetData::WaitTargetDataUsingActor(this, 
 																			NewParam.TaskInstanceName, 
 																			EGameplayTargetingConfirmation::UserConfirmed, 
-																			NewParam.TargetActorClass);
+																			SpawnedTargetActor);
 		TargetTask->ValidData.AddDynamic(this, &ThisClass::OnValidDataCallback);
-		TargetTask->ReadyForActivation();
-		TargetTask->BeginSpawningActor(this, NewParam.TargetActorClass, SpawnedTargetActor);
 
 		if (!IsValid(SpawnedTargetActor))
 		{
 			EndAbility(CurrentSpecHandle, CurrentActorInfo, CurrentActivationInfo, true, true);
 			return;
 		}
+		TargetTask->ReadyForActivation();
 
 		SpawnedActor = Cast<ACombatGameplayAbilityTargetActor>(SpawnedTargetActor);
 		SpawnedActor->StartTargetingWithNewParam(this, NewParam);

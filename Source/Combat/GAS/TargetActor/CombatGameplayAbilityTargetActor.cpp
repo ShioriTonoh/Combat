@@ -21,6 +21,7 @@ void ACombatGameplayAbilityTargetActor::BeginPlay()
 void ACombatGameplayAbilityTargetActor::EndPlay(const EEndPlayReason::Type EndPlayReason)
 {
 	ConfirmTargetingAndContinue();
+	Super::EndPlay(EndPlayReason);
 }
 
 void ACombatGameplayAbilityTargetActor::Tick(float DeltaSeconds)
@@ -53,9 +54,9 @@ void ACombatGameplayAbilityTargetActor::StartTargeting(UGameplayAbility* Ability
 
 void ACombatGameplayAbilityTargetActor::StartTargetingWithNewParam(UGameplayAbility* Ability, const FCombatTargetActorParam& InParam)
 {
-	LocalTargetActorParam = InParam;
-
 	StartTargeting(Ability);
+
+	LocalTargetActorParam = InParam;
 }
 
 void ACombatGameplayAbilityTargetActor::ConfirmTargetingAndContinue()
