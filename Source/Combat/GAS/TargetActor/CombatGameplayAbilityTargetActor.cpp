@@ -7,6 +7,7 @@
 #include "Kismet/GameplayStatics.h"
 
 ACombatGameplayAbilityTargetActor::ACombatGameplayAbilityTargetActor()
+	: bPersitentDrawDebugShape(false)
 {
 	PrimaryActorTick.bCanEverTick = true;
 }
@@ -45,9 +46,9 @@ void ACombatGameplayAbilityTargetActor::StartTargeting(UGameplayAbility* Ability
 		SetLifeSpan(LocalTargetActorParam.MaxLifeTime);
 	}
 
-	if (ACombatCharacterBase* Character = Cast<ACombatCharacterBase>(SourceActor))
+	if (SourceCharacter = Cast<ACombatCharacterBase>(SourceActor))
 	{
-		AttachToComponent(Character->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, Character->WeaponSocket_Combat);
+		AttachToComponent(SourceCharacter->GetMesh(), FAttachmentTransformRules::SnapToTargetNotIncludingScale, SourceCharacter->WeaponSocket_Combat);
 	}
 
 }
@@ -88,6 +89,12 @@ void ACombatGameplayAbilityTargetActor::DoSweepCheck(int32 Steps, TArray<FHitRes
 	}
 
 	FVector OverlapPos = GetActorLocation();
+	FQuat OverlapQuat = FQuat::Identity;
+	if (IsValid(SourceCharacter))
+	{
+		OverlapQuat = SourceCharacter->GetMesh()->GetSocketQuaternion(SourceCharacter->WeaponSocket_Combat);
+	}
+
 	//OverlapPos.Z += 50.f;
 
 	FCollisionShape OverlapShape;
@@ -97,7 +104,7 @@ void ACombatGameplayAbilityTargetActor::DoSweepCheck(int32 Steps, TArray<FHitRes
 		OverlapShape = FCollisionShape::MakeBox(LocalTargetActorParam.CollisionShapeInfo.Extent * GetActorScale());
 		if (bDebug)
 		{
-			DrawDebugBox(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Extent * GetActorScale(), FColor::Green, true, DeltaTime, 0, 1);
+			DrawDebugBox(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Extent * GetActorScale(), OverlapQuat, FColor::Green, bPersitentDrawDebugShape, DeltaTime, 0, 1);
 		}
 		break;
 
@@ -105,7 +112,7 @@ void ACombatGameplayAbilityTargetActor::DoSweepCheck(int32 Steps, TArray<FHitRes
 		OverlapShape = FCollisionShape::MakeCapsule(LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y), LocalTargetActorParam.CollisionShapeInfo.HalfHeight * GetActorScale().Z);
 		if (bDebug)
 		{
-			DrawDebugCapsule(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y), LocalTargetActorParam.CollisionShapeInfo.HalfHeight * GetActorScale().Z, FQuat::Identity, FColor::Green, false, DeltaTime, 0, 1);
+			DrawDebugCapsule(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y), LocalTargetActorParam.CollisionShapeInfo.HalfHeight * GetActorScale().Z, OverlapQuat, FColor::Green, bPersitentDrawDebugShape, DeltaTime, 0, 1);
 		}
 		break;
 
@@ -113,7 +120,7 @@ void ACombatGameplayAbilityTargetActor::DoSweepCheck(int32 Steps, TArray<FHitRes
 		OverlapShape = FCollisionShape::MakeSphere(LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y));
 		if (bDebug)
 		{
-			DrawDebugSphere(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y), 8, FColor::Green, false, DeltaTime, 0, 1);
+			DrawDebugSphere(GetWorld(), OverlapPos, LocalTargetActorParam.CollisionShapeInfo.Radius * FMath::Max(GetActorScale().X, GetActorScale().Y), 8, FColor::Green, bPersitentDrawDebugShape, DeltaTime, 0, 1);
 		}
 		break;
 
@@ -121,17 +128,17 @@ void ACombatGameplayAbilityTargetActor::DoSweepCheck(int32 Steps, TArray<FHitRes
 		break;
 	}
 
-	GetWorld()->OverlapMultiByChannel(OverlapResults, OverlapPos, FQuat::Identity, ECollisionChannel::ECC_Pawn, OverlapShape, QueryParams);
+	GetWorld()->OverlapMultiByChannel(OverlapResults, OverlapPos, OverlapQuat, ECollisionChannel::ECC_Pawn, OverlapShape, QueryParams);
 
 	for (const FOverlapResult& OverlapResult : OverlapResults)
 	{
-		if (ACombatAICharacter* Enemy = Cast<ACombatAICharacter>(OverlapResult.GetActor()))
+		if (ACombatCharacterBase* Victim = Cast<ACombatCharacterBase>(OverlapResult.GetActor()))
 		{
-			if (!TargetOverlapActors.Contains(Enemy))
+			if (!TargetOverlapActors.Contains(Victim))
 			{
-				TargetOverlapActors.AddUnique(Enemy);
+				TargetOverlapActors.AddUnique(Victim);
 				ConfirmTargetingAndContinue();
-				UE_LOG(LogTemp, Log, TEXT("Overlapping pawn: %s"), *Enemy->GetName());
+				UE_LOG(LogTemp, Log, TEXT("Overlapping pawn: %s"), *Victim->GetName());
 			}
 
 		}

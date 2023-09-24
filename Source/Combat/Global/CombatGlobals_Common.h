@@ -7,7 +7,7 @@
 #include "Combat.h"
 #include "CombatGlobals_Common.generated.h"
 
-/**
+/** 
  * Ability Input ID
  */
 UENUM(BlueprintType)
@@ -89,6 +89,9 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FCombatCollisionShape CollisionShapeInfo;
+
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FVector RelativeLocationToSocket;
 
 	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	//FGameplayTagContainer AdditionalTagToTarget;

@@ -44,6 +44,10 @@ protected:
 	UPROPERTY(/*BlueprintReadOnly, Category = "Targeting"*/)
 	TArray<TWeakObjectPtr<AActor>> TargetOverlapActors;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Targeting")
+	bool bPersitentDrawDebugShape;
+
 	FCombatTargetActorParam LocalTargetActorParam;
 
+	TObjectPtr<class ACombatCharacterBase> SourceCharacter;
 };
