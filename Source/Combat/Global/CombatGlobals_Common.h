@@ -93,8 +93,8 @@ public:
 	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FVector RelativeLocationToSocket;
 
-	//UPROPERTY(BlueprintReadWrite, EditAnywhere)
-	//FGameplayTagContainer AdditionalTagToTarget;
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
+	FGameplayTagContainer AdditionalTagsToTarget;
 };
 
 USTRUCT(BlueprintType)

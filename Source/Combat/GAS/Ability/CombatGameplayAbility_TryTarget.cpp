@@ -81,10 +81,12 @@ void UCombatGameplayAbility_TryTarget::OnValidDataCallback(const FGameplayAbilit
 		{
 			if (ACombatAICharacter* Enemy = Cast<ACombatAICharacter>(Actor))
 			{
-				FGameplayEventData NewEvent;
-				NewEvent.EventTag = FGameplayTag::RequestGameplayTag(FName("Ability.Event.KnockHit"));
-				//NewEvent.TargetTags = SpawnedActor->GetTargetActorParam().AdditionalTagToTarget;
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Enemy, NewEvent.EventTag, NewEvent);
+				FGameplayTag HitTag = FGameplayTag::RequestGameplayTag(FName("Ability.Event.KnockHit"));
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Enemy, HitTag, FGameplayEventData());
+				for (auto Tag : SpawnedActor->GetTargetActorParam().AdditionalTagsToTarget)
+				{
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Enemy, Tag, FGameplayEventData());
+				}
 			}
 		}
 	}
@@ -94,10 +96,12 @@ void UCombatGameplayAbility_TryTarget::OnValidDataCallback(const FGameplayAbilit
 		{
 			if (ACombatPlayerCharacter* Player = Cast<ACombatPlayerCharacter>(Actor))
 			{
-				FGameplayEventData NewEvent;
-				NewEvent.EventTag = FGameplayTag::RequestGameplayTag(FName("Ability.Event.KnockHit"));
-				//NewEvent.TargetTags = SpawnedActor->GetTargetActorParam().AdditionalTagToTarget;
-				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, NewEvent.EventTag, NewEvent);
+				FGameplayTag HitTag = FGameplayTag::RequestGameplayTag(FName("Ability.Event.KnockHit"));
+				UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, HitTag, FGameplayEventData());
+				for (auto Tag : SpawnedActor->GetTargetActorParam().AdditionalTagsToTarget)
+				{
+					UAbilitySystemBlueprintLibrary::SendGameplayEventToActor(Player, Tag, FGameplayEventData());
+				}
 			}
 		}
 	}
